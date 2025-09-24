@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block title %}Lessons{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header">
+        <h1>Tamil Writing Lessons</h1>
+        <p>Select a lesson to begin. New lessons will unlock as you complete the previous ones.</p>
+    </div>
+
+    <div class="row g-4">
+        {% for lesson in lessons %}
+        <div class="col-md-6 col-lg-4">
+            <div class="lesson-card {% if not lesson.unlocked %}locked{% endif %}">
+                <div class="lesson-card-body">
+                    <div class="lesson-header">
+                        <span class="lesson-type">
+                            {% if lesson.lesson_type == 'uyir' %}உயிர் எழுத்து{% endif %}
+                            {% if lesson.lesson_type == 'mei' %}மெய் எழுத்து{% endif %}
+                            {% if lesson.lesson_type == 'uyirmei' %}உயிர்மெய் எழுத்து{% endif %}
+                            {% if lesson.lesson_type == 'words' %}சொல்{% endif %}
+                            {% if lesson.lesson_type == 'sentences' %}வாக்கியம்{% endif %}
+                            {% if lesson.lesson_type == 'translations' %}மொழிபெயர்ப்பு{% endif %}
+                        </span>
+                        {% if lesson.completed %}
+                            <span class="badge bg-success">Completed</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="lesson-title">{{ lesson.title }}</h3>
+                    {% if lesson.attempts > 0 %}
+                    <div class="lesson-progress">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ (lesson.highest_accuracy or 0) * 100 }}%" aria-valuenow="{{ (lesson.highest_accuracy or 0) * 100 }}"></div>
+                        </div>
+                        <span class="progress-label">Best: {{ "%.0f"|format((lesson.highest_accuracy or 0) * 100) }}%</span>
+                    </div>
+                    {% else %}
+                    <div class="lesson-progress-placeholder">
+                        <small class="text-muted">Not yet attempted</small>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="lesson-card-footer">
+                    {% if lesson.unlocked %}
+                        <a href="/lesson/{{ lesson.id }}" class="btn btn-primary w-100">
+                            <i class="fas {% if lesson.attempts > 0 %}fa-redo-alt{% else %}fa-play{% endif %} me-2"></i>
+                            {% if lesson.attempts > 0 %}Practice{% else %}Start{% endif %}
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="fas fa-lock me-2"></i>Locked
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
